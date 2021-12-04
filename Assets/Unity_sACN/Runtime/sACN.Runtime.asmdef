@@ -1,0 +1,16 @@
+{
+    "name": "sACN.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:845cbb1aa986e434f8ad721ee004c0e2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

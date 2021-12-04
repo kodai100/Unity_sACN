@@ -1,0 +1,14 @@
+{
+  "author": "kodai100",
+  "description": "sACN Library for unity",
+  "displayName": "sACN",
+  "keywords": [
+    "unity", "lighting", "live", "performance"
+  ],
+  "license": "MIT",
+  "name": "com.kodai100.sacn",
+  "repository": "github:kodai100/Unity_sACN",
+  "unity": "2021.2",
+  "unityRelease": "0f1",
+  "version": "1.0.0"
+}

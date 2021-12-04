@@ -1,0 +1,16 @@
+{
+    "name": "Kadmium.sACN",
+    "rootNamespace": "",
+    "references": [
+        "GUID:93764179b08f19e409b9a96f73f89f77"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
