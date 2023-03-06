@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 using UnityEngine;
 
 namespace com.kodai100.Sacn
@@ -10,39 +10,29 @@ namespace com.kodai100.Sacn
         [SerializeField] private WaveformVisualizer _waveformVisualizer;
         [SerializeField] private Material _visualizerMaterial;
         
-        private SynchronizationContext _synchronizationContext;
-
         private List<WaveformVisualizer> _visualizers = new();
-
-        private void Awake()
-        {
-            _synchronizationContext = SynchronizationContext.Current;
-        }
 
         public void OnDiscoverUniverse(IEnumerable<ushort> universes)
         {
-            _synchronizationContext.Post(_ =>
-            {
-                
-                DestroyAllVisualizers();
+            DestroyAllVisualizers();
 
-                foreach (var universe in universes)
-                {
-                    var visualizer = Instantiate(_waveformVisualizer, transform);
-                    visualizer.Initialize(_visualizerMaterial);
-                    _visualizers.Add(visualizer);
-                }
-                
-                
-            }, null);
+            foreach (var universe in universes)
+            {
+                var visualizer = Instantiate(_waveformVisualizer, transform);
+                visualizer.Initialize(_visualizerMaterial, universe,18f, 1f, 1.2f * universe);
+                _visualizers.Add(visualizer);
+            }
         }
         
         public void OnReceiveDmx(ushort universe, IEnumerable<byte> data)
         {
-            _synchronizationContext.Post(_ =>
+            _visualizers.ForEach(v =>
             {
-                
-            }, null);
+                if (v.Id == universe)
+                {
+                    v.Refresh(data.ToArray());
+                }
+            });
         }
 
         private void DestroyAllVisualizers()
@@ -52,6 +42,8 @@ namespace com.kodai100.Sacn
                 Destroy(v.gameObject);
             });
             _visualizers.Clear();
+            
+            Debug.Log("Destroyed");
         }
         
     }

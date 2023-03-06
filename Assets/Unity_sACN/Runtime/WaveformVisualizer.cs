@@ -20,9 +20,15 @@ namespace com.kodai100.Sacn
 
         private bool _initialized;
 
-        public void Initialize(Material material, float width = 1f, float height = 1f, float yOffset = 0f)
+        private ushort _id;
+        public ushort Id => _id;
+
+        private byte[] _data;
+
+        public void Initialize(Material material, ushort id, float width = 1f, float height = 1f, float yOffset = 0f)
         {
             _material = material;
+            _id = id;
             _width = width;
             _height = height;
             _yOffset = yOffset;
@@ -32,9 +38,15 @@ namespace com.kodai100.Sacn
 
         public void Refresh(byte[] data)
         {
-            if (!_initialized) return;
+            _data = data;
+        }
 
-            UpdateMesh(data);
+        private void Update()
+        {
+            if (!_initialized) return;
+            if (_data == null) return;
+
+            UpdateMesh(_data);
 
             Graphics.DrawMesh(_mesh, transform.localToWorldMatrix, _material, gameObject.layer);
         }

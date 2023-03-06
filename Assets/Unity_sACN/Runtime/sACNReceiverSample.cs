@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using Kadmium_sACN.SacnReceiver;
 using UnityEngine;
 
@@ -14,16 +15,23 @@ namespace com.kodai100.Sacn
         
         private MulticastSacnReceiverIPV4 receiver;
     
-        private IEnumerable<ushort> _universes;
+        private List<ushort> _universes = new();
+
+        private SynchronizationContext _synchronizationContext;
         
         private void Start()
         {
+            _synchronizationContext = SynchronizationContext.Current;
+            
             receiver = new MulticastSacnReceiverIPV4(); // IPv6 is also supported
             
             receiver.OnDataPacketReceived += (sender, packet) =>
             {
                 // Debug.Log($"{packet.FramingLayer.Universe} : {string.Join(", ", packet.DMPLayer.PropertyValues)}");
-                _receiveEvent.Invoke(packet.FramingLayer.Universe, packet.DMPLayer.PropertyValues);
+                _synchronizationContext.Post(_ =>
+                {
+                    _receiveEvent.Invoke(packet.FramingLayer.Universe, packet.DMPLayer.PropertyValues);
+                }, null);
             };
             
             receiver.OnSynchronizationPacketReceived += (sender, packet) =>
@@ -37,10 +45,17 @@ namespace com.kodai100.Sacn
                 if (!CheckSame(universes))
                 {
                     Debug.Log($"Detect universe change. Join to [{string.Join(", ", packet.UniverseDiscoveryLayer.Universes.Select(p=>p.ToString()).ToArray())}]");
-                    _universes = universes;
-                    receiver.JoinMulticastGroups(_universes);
+
+                    var notContainedInPreviousUniverses = universes.Where(p => !_universes.Contains(p)).ToList();
                     
-                    _discoverEvent?.Invoke(universes);
+                    _universes.AddRange(notContainedInPreviousUniverses);
+
+                    receiver.JoinMulticastGroups(notContainedInPreviousUniverses);
+                    
+                    _synchronizationContext.Post(_ =>
+                    {
+                        _discoverEvent.Invoke(universes);
+                    }, null);
                 }
                 
             };
@@ -49,7 +64,7 @@ namespace com.kodai100.Sacn
             receiver.JoinUniverseDiscoveryGroup();
             
         }
-    
+
         private bool CheckSame(IEnumerable<ushort> universes)
         {
             if (_universes == null) return false;
@@ -64,6 +79,7 @@ namespace com.kodai100.Sacn
     
         private void OnDestroy()
         {
+            receiver.DropUniverseDiscoveryGroup();
             receiver?.Dispose();
         }
     }
