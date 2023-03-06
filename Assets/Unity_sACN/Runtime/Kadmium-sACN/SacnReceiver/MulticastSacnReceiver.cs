@@ -1,9 +1,7 @@
-﻿using Kadmium_sACN.Layers.Framing;
-using Kadmium_sACN.MulticastAddressProvider;
+﻿using Kadmium_sACN.MulticastAddressProvider;
 using Kadmium_Udp;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Kadmium_sACN.SacnReceiver
 {
@@ -32,6 +30,16 @@ namespace Kadmium_sACN.SacnReceiver
 			}
 
 			UdpWrapper.JoinMulticastGroup(MulticastAddressProvider.GetMulticastAddress(universe));
+		}
+
+		public void JoinUniverseDiscoveryGroup()
+		{
+			UdpWrapper.JoinMulticastGroup(MulticastAddressProvider.GetMulticastAddress(UniverseDiscoveryPacket.DiscoveryUniverse));
+		}
+
+		public void DropUniverseDiscoveryGroup()
+		{
+			UdpWrapper.DropMulticastGroup(MulticastAddressProvider.GetMulticastAddress(UniverseDiscoveryPacket.DiscoveryUniverse));
 		}
 
 		public void DropMulticastGroups(IEnumerable<ushort> universes)
