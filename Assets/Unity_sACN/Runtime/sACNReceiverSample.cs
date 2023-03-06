@@ -16,8 +16,7 @@ public class sACNReceiverSample : MonoBehaviour
         
         receiver.OnDataPacketReceived += (sender, packet) =>
         {
-            Debug.Log(packet.FramingLayer.Universe + ": ");
-            Debug.Log(string.Join(", ", packet.DMPLayer.PropertyValues));
+            Debug.Log($"{packet.FramingLayer.Universe} : {string.Join(", ", packet.DMPLayer.PropertyValues)}");
         };
         
         receiver.OnSynchronizationPacketReceived += (sender, packet) =>
